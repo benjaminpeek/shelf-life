@@ -23,6 +23,7 @@
 	},
 	"homepage": "https://github.com/benjaminpeek/shelf-life#readme",
 	"dependencies": {
+		"@supabase/supabase-js": "^2.50.0",
 		"@tailwindcss/postcss": "^4.1.8",
 		"next": "^15.3.3",
 		"react": "^19.1.0",
