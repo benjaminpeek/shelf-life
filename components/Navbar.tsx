@@ -1,11 +1,18 @@
 import Link from "next/link";
 
 type NavbarProps = {
-	onLoginClick?: () => void;
-	onSignupClick?: () => void;
+	isLoggedIn: boolean;
+	onLoginClick: () => void;
+	onSignupClick: () => void;
+	onSignOutClick: () => void;
 };
 
-export default function Navbar({ onLoginClick, onSignupClick }: NavbarProps) {
+export default function Navbar({
+	isLoggedIn,
+	onLoginClick,
+	onSignupClick,
+	onSignOutClick,
+}: NavbarProps) {
 	return (
 		<nav className="w-full bg-green-700 py-4 px-8 flex justify-between items-center">
 			<Link href="/" className="text-white text-2xl font-bold">
@@ -25,20 +32,32 @@ export default function Navbar({ onLoginClick, onSignupClick }: NavbarProps) {
 				<Link href="/pantry" className="text-white hover:underline">
 					Pantry
 				</Link>
-				<button
-					onClick={onLoginClick}
-					className="text-white hover:underline bg-transparent border-none outline-none"
-					type="button"
-				>
-					Log In
-				</button>
-				<button
-					onClick={onSignupClick}
-					className="text-white hover:underline bg-transparent border-none outline-none"
-					type="button"
-				>
-					Sign Up
-				</button>
+				{isLoggedIn ? (
+					<button
+						onClick={onSignOutClick}
+						className="text-white hover:underline bg-transparent border-none outline-none"
+						type="button"
+					>
+						Sign Out
+					</button>
+				) : (
+					<>
+						<button
+							onClick={onLoginClick}
+							className="text-white hover:underline bg-transparent border-none outline-none"
+							type="button"
+						>
+							Log In
+						</button>
+						<button
+							onClick={onSignupClick}
+							className="text-white hover:underline bg-transparent border-none outline-none"
+							type="button"
+						>
+							Sign Up
+						</button>
+					</>
+				)}
 			</div>
 		</nav>
 	);

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import Modal from "../components/Modal";
@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 
 export default function Home() {
 	const router = useRouter();
+	const [isLoggedIn, setIsLoggedIn] = useState(false);
 
 	const [showLogin, setShowLogin] = useState(false);
 	const [showSignup, setShowSignup] = useState(false);
@@ -16,6 +17,22 @@ export default function Home() {
 	const [signupPassword, setSignupPassword] = useState("");
 	const [signupConfirm, setSignupConfirm] = useState("");
 	const [error, setError] = useState<string | null>(null);
+
+	useEffect(() => {
+		supabase.auth.getUser().then(({ data }) => setIsLoggedIn(!!data.user));
+		const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+			setIsLoggedIn(!!session?.user);
+		});
+		return () => {
+			listener?.subscription.unsubscribe();
+		};
+	}, []);
+
+	const handleSignOut = async () => {
+		await supabase.auth.signOut();
+		// Optionally redirect or show a message
+		router.push("/");
+	};
 
 	// Handle login
 	const handleLogin = async (e: React.FormEvent) => {
@@ -50,10 +67,15 @@ export default function Home() {
 
 	return (
 		<>
-			<Navbar onLoginClick={() => setShowLogin(true)} onSignupClick={() => setShowSignup(true)} />
-			<div className="min-h-screen flex">
+			<Navbar
+				onLoginClick={() => setShowLogin(true)}
+				onSignupClick={() => setShowSignup(true)}
+				onSignOutClick={handleSignOut}
+				isLoggedIn={isLoggedIn}
+			/>
+			<div className="min-h-screen flex bg-[#f4fdf9]">
 				{/* Left */}
-				<div className="w-full md:w-1/2 flex flex-col items-center justify-center bg-gray-50 relative">
+				<div className="w-full md:w-1/2 flex flex-col items-center justify-center relative">
 					<div className="flex flex-col items-center z-10 px-8">
 						<h1
 							className="text-5xl font-bold text-green-700 mb-4"
@@ -92,7 +114,7 @@ export default function Home() {
 				</div>
 				{/* Right */}
 				<div
-					className="w-1/2 h-screen relative hidden md:block"
+					className="w-1/2 h-screen relative hidden md:block m-10 rounded-sm shadow-md"
 					style={{
 						backgroundImage: "url('/images/homepage-bg.jpg')",
 						backgroundSize: "cover",
